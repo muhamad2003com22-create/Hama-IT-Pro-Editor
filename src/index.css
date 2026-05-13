@@ -15,6 +15,14 @@
 @layer base {
   body {
     @apply bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button, input, select, textarea {
+    touch-action: manipulation;
   }
 }
 
@@ -24,21 +32,47 @@
 
 .react-easy-crop_Container {
   @apply rounded-xl overflow-hidden shadow-inner bg-slate-200 dark:bg-slate-800;
-  touch-action: none;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  height: 4px;
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 dark:bg-slate-800 rounded-full;
+  touch-action: none !important;
 }
 
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: theme('colors.slate.200') transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.canvas-shadow {
+  box-shadow: var(--shadow-canvas);
+  -webkit-box-shadow: var(--shadow-canvas);
+}
+
+/* Range input mobile optimization */
+input[type="range"] {
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: theme('colors.indigo.600');
+  cursor: pointer;
+  margin-top: -8px; /* Centers thumb on the track */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: theme('colors.slate.100');
+  border-radius: 4px;
+}
+
+.dark input[type="range"]::-webkit-slider-runnable-track {
+  background: theme('colors.slate.800');
 }
 
 .dark .custom-scrollbar {

@@ -95,8 +95,16 @@ export async function getCroppedImg(
     ctx.fillText(text, targetWidth - padding, targetHeight - padding);
   }
 
-  return new Promise((resolve) => {
+  const result = await new Promise<Blob | null>((resolve) => {
     canvas.toBlob((blob) => resolve(blob), format, 1.0);
   });
+
+  // Explicitly clear memory by resetting canvas dimensions
+  tempCanvas.width = 0;
+  tempCanvas.height = 0;
+  canvas.width = 0;
+  canvas.height = 0;
+
+  return result;
 }
 

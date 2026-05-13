@@ -135,8 +135,13 @@ export default function App() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !((window as any).MSStream);
 
         if (isSocialBrowser || (isIOS && !('download' in HTMLAnchorElement.prototype))) {
-          // Open in new tab for long-press save in restrictive browsers
-          window.open(url, '_blank');
+          // Open in new tab or specific modal for long-press save in restrictive browsers
+          // We use a small delay and a user-triggered fallback if window.open is blocked
+          const newWindow = window.open(url, '_blank');
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+             // Fallback for pop-up blockers: just show a message or change current location
+             window.location.href = url;
+          }
         } else {
           const link = document.createElement('a');
           link.style.display = 'none';
@@ -146,10 +151,13 @@ export default function App() {
           document.body.appendChild(link);
           link.click();
           
+          // Use a bit longer timeout for mobile stability
           setTimeout(() => {
-            document.body.removeChild(link);
+            if (document.body.contains(link)) {
+              document.body.removeChild(link);
+            }
             window.URL.revokeObjectURL(url);
-          }, 2000);
+          }, 5000);
         }
       }
     } catch (e) {
@@ -160,9 +168,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-screen overflow-hidden">
+    <div className="min-h-screen flex flex-col font-sans bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-screen overflow-hidden select-none">
       {/* Header */}
-      <header className="h-14 sm:h-16 flex-shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 flex items-center justify-between z-50">
+      <header className="h-14 sm:h-16 flex-shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 flex items-center justify-between z-50 pointer-events-auto">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
             <ImageIcon size={24} strokeWidth={2.5} />
@@ -351,7 +359,7 @@ export default function App() {
                   </div>
 
                   {/* Mobile Controls & Actions */}
-                  <div className="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 pb-5 lg:hidden z-40 shrink-0">
+                  <div className="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 pb-5 lg:hidden z-40 shrink-0 pointer-events-auto">
                     <div className="grid grid-cols-1 gap-3 mb-4">
                         <div className="space-y-2">
                           <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase">
@@ -363,9 +371,9 @@ export default function App() {
                             value={zoom}
                             min={1}
                             max={3}
-                            step={0.1}
+                            step={0.01}
                             onChange={(e) => setZoom(Number(e.target.value))}
-                            className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 h-8"
+                            className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 h-8 touch-none"
                           />
                         </div>
 
@@ -482,7 +490,7 @@ export default function App() {
                 </section>
 
                 {/* Desktop Sidebar Tools (Right) */}
-                <aside className="hidden lg:flex w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-8 flex-col flex-shrink-0 overflow-y-auto">
+                <aside className="hidden lg:flex w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-8 flex-col flex-shrink-0 overflow-y-auto pointer-events-auto">
                   <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-8 border-b border-slate-100 dark:border-slate-800 pb-4 uppercase tracking-widest">
                     {t.adjustImage}
                   </h3>
