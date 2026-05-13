@@ -16,7 +16,8 @@ import {
   RotateCw,
   Image as ImageIcon,
   Check,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -50,6 +51,7 @@ export default function App() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -130,18 +132,14 @@ export default function App() {
         const ext = format === 'image/jpeg' ? 'jpg' : 'png';
         const fullFileName = `${fileName}.${ext}`;
 
-        // Detection for in-app social browsers (FB, IG, etc.)
-        const isSocialBrowser = /FBAN|FBAV|Instagram|Twitter|LinkedIn/.test(navigator.userAgent);
+        // Detection for browsers that block direct downloads
+        const isSocialBrowser = /FBAN|FBAV|Instagram|Twitter|LinkedIn|Messenger/.test(navigator.userAgent);
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !((window as any).MSStream);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-        if (isSocialBrowser || (isIOS && !('download' in HTMLAnchorElement.prototype))) {
-          // Open in new tab or specific modal for long-press save in restrictive browsers
-          // We use a small delay and a user-triggered fallback if window.open is blocked
-          const newWindow = window.open(url, '_blank');
-          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-             // Fallback for pop-up blockers: just show a message or change current location
-             window.location.href = url;
-          }
+        if (isSocialBrowser || (isIOS && isSafari)) {
+          // Show modal for long-press saving on iOS Safari and social apps
+          setDownloadUrl(url);
         } else {
           const link = document.createElement('a');
           link.style.display = 'none';
@@ -151,13 +149,12 @@ export default function App() {
           document.body.appendChild(link);
           link.click();
           
-          // Use a bit longer timeout for mobile stability
           setTimeout(() => {
             if (document.body.contains(link)) {
               document.body.removeChild(link);
             }
             window.URL.revokeObjectURL(url);
-          }, 5000);
+          }, 10000);
         }
       }
     } catch (e) {
@@ -168,7 +165,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-screen overflow-hidden select-none">
+    <div className="min-h-[100dvh] flex flex-col font-sans bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-[100dvh] overflow-hidden select-none">
       {/* Header */}
       <header className="h-14 sm:h-16 flex-shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 flex items-center justify-between z-50 pointer-events-auto">
         <div className="flex items-center gap-2">
@@ -215,6 +212,56 @@ export default function App() {
           </button>
         </div>
       </header>
+
+      {/* Download Result Modal */}
+      {downloadUrl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-gray-900 w-full max-w-sm rounded-[32px] overflow-hidden p-6 shadow-2xl relative">
+            <button 
+              onClick={() => {
+                window.URL.revokeObjectURL(downloadUrl);
+                setDownloadUrl(null);
+              }}
+              className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex flex-col items-center gap-6">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl">
+                <Download className="text-blue-600" size={32} />
+              </div>
+              
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-black dark:text-white uppercase tracking-tighter">
+                  {isRtl ? 'ئامایە بۆ پاشەکەوت' : 'Ready to Save'}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  {t.howToSave}
+                </p>
+              </div>
+
+              <div className="relative w-full aspect-square rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                <img 
+                  src={downloadUrl} 
+                  alt="Result" 
+                  className="max-w-full max-h-full object-contain shadow-sm"
+                />
+              </div>
+
+              <button
+                onClick={() => {
+                  window.URL.revokeObjectURL(downloadUrl);
+                  setDownloadUrl(null);
+                }}
+                className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-sm"
+              >
+                {isRtl ? 'داخستن' : 'Close'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative bg-gray-50 dark:bg-gray-950">
         <AnimatePresence mode="wait">
@@ -373,7 +420,8 @@ export default function App() {
                             max={3}
                             step={0.01}
                             onChange={(e) => setZoom(Number(e.target.value))}
-                            className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 h-8 touch-none"
+                            onInput={(e) => setZoom(Number((e.target as HTMLInputElement).value))}
+                            className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 h-8 touch-pan-x"
                           />
                         </div>
 
