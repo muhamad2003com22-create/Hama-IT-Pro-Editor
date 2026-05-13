@@ -126,21 +126,31 @@ export default function App() {
 
       if (croppedImageBlob) {
         const url = URL.createObjectURL(croppedImageBlob);
-        const link = document.createElement('a');
+        const fileName = `${selectedPreset.platform}-${selectedPreset.name}-${Date.now()}`.replace(/\s+/g, '-');
         const ext = format === 'image/jpeg' ? 'jpg' : 'png';
-        
-        link.style.display = 'none';
-        link.href = url;
-        link.download = `${selectedPreset.platform}-${selectedPreset.name}-${Date.now()}.${ext}`.replace(/\s+/g, '-');
-        
-        document.body.appendChild(link);
-        link.click();
-        
-        // Delay revocation to ensure download starts
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-        }, 1000);
+        const fullFileName = `${fileName}.${ext}`;
+
+        // Detection for in-app social browsers (FB, IG, etc.)
+        const isSocialBrowser = /FBAN|FBAV|Instagram|Twitter|LinkedIn/.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !((window as any).MSStream);
+
+        if (isSocialBrowser || (isIOS && !('download' in HTMLAnchorElement.prototype))) {
+          // Open in new tab for long-press save in restrictive browsers
+          window.open(url, '_blank');
+        } else {
+          const link = document.createElement('a');
+          link.style.display = 'none';
+          link.href = url;
+          link.download = fullFileName;
+          
+          document.body.appendChild(link);
+          link.click();
+          
+          setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+          }, 2000);
+        }
       }
     } catch (e) {
       console.error('Download error:', e);
@@ -438,6 +448,10 @@ export default function App() {
                       </button>
                     </div>
 
+                    <p className="mt-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-medium">
+                      {t.howToSave}
+                    </p>
+
                     <div className="mt-4">
                        <div className="flex overflow-x-auto gap-2 custom-scrollbar pb-1">
                          {PRESETS.map((preset) => (
@@ -585,6 +599,9 @@ export default function App() {
                     {isLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download size={24} />}
                     {t.downloadBtn}
                   </button>
+                  <p className="mt-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-medium">
+                    {t.howToSave}
+                  </p>
                 </aside>
               </div>
             </>

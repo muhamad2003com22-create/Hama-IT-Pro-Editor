@@ -20,6 +20,7 @@ export interface Translation {
   platforms: { [key: string]: string };
   loading: string;
   qualityNote: string;
+  howToSave: string;
   darkMode: string;
   lightMode: string;
   watermark: string;
@@ -42,6 +43,7 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     rotation: 'Rotation',
     loading: 'Processing...',
     qualityNote: 'Exporting in Full HD with 100% quality retention.',
+    howToSave: 'If download fails, long press the image to save.',
     darkMode: 'Dark',
     lightMode: 'Light',
     watermark: 'Add Hama IT Watermark',
@@ -84,6 +86,7 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     rotation: 'سوڕانەوە',
     loading: 'لەکاردایە...',
     qualityNote: 'هەناردەکردن بە کوالێتی Full HD و پاراستنی ١٠٠٪ی کوالێتی.',
+    howToSave: 'ئەگەر دابەزاندن ئیشی نەکرد، وێنەکە دابگرە بۆ پاراستن.',
     darkMode: 'تاریک',
     lightMode: 'ڕووناک',
     watermark: 'زیادکردنی واترماکی Hama IT',
@@ -126,6 +129,7 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     rotation: 'تدوير',
     loading: 'جاري المعالجة...',
     qualityNote: 'تصدير بجودة Full HD مع الحفاظ على ١٠٠٪ من الجودة.',
+    howToSave: 'إذا فشل التحميل، اضغط مطولاً على الصورة لحفظها.',
     darkMode: 'داكن',
     lightMode: 'فاتح',
     watermark: 'إضافة علامة Hama IT المائية',
