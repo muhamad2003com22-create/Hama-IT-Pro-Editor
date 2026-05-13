@@ -42,10 +42,14 @@ export default function App() {
   const [withWatermark, setWithWatermark] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
   const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      if (saved) return saved === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('theme');
+        if (saved) return saved === 'dark';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+    } catch (e) {
+      console.error('LocalStorage error:', e);
     }
     return true;
   });
@@ -57,7 +61,7 @@ export default function App() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = TRANSLATIONS[language];
-  const isRtl = language === 'ku' || language === 'ar';
+  const isRtl = language === 'ku';
 
   useEffect(() => {
     document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
@@ -65,13 +69,22 @@ export default function App() {
   }, [language, isRtl]);
 
   useEffect(() => {
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    try {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch (e) {
+      console.error('LocalStorage write error:', e);
+    }
+    
     const root = document.documentElement;
+    const body = document.body;
+    
     if (isDark) {
       root.classList.add('dark');
+      body.classList.add('dark');
       root.style.setProperty('color-scheme', 'dark');
     } else {
       root.classList.remove('dark');
+      body.classList.remove('dark');
       root.style.setProperty('color-scheme', 'light');
     }
   }, [isDark]);
@@ -187,7 +200,7 @@ export default function App() {
 
         <div className="flex items-center gap-2 sm:gap-6">
           <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 sm:p-1 gap-1">
-            {(['en', 'ku', 'ar'] as const).map((lang) => (
+            {(['en', 'ku'] as const).map((lang) => (
               <button
                 key={lang}
                 onClick={() => setLanguage(lang)}
@@ -198,7 +211,7 @@ export default function App() {
                     : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 )}
               >
-                {lang === 'en' ? 'EN' : lang === 'ku' ? 'کوردی' : 'عربي'}
+                {lang === 'en' ? 'EN' : 'کوردی'}
               </button>
             ))}
           </div>

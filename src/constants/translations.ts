@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Language = 'en' | 'ku' | 'ar';
+export type Language = 'en' | 'ku';
 
 export interface Translation {
   title: string;
@@ -114,49 +114,6 @@ export const TRANSLATIONS: Record<Language, Translation> = {
       'Banner': 'بانەر',
       'Full-screen Video / Image': 'ڤیدیۆ / وێنەی نووسراو',
       'Header': 'سەرپەڕە (Header)',
-    }
-  },
-  ar: {
-    title: 'Hama IT',
-    subtitle: 'أداة احترافية لتغيير حجم الصور للتواصل الاجتماعي',
-    uploadBtn: 'رفع صورة',
-    dragDrop: 'اسحب الصورة وأفلتها هنا أو انقر للاختيار',
-    selectPreset: 'اختر القالب الجاهز',
-    adjustImage: 'اضبط الصورة',
-    downloadBtn: 'تحميل صورة HD',
-    changeImage: 'تغيير الصورة',
-    zoom: 'تكبير',
-    rotation: 'تدوير',
-    loading: 'جاري المعالجة...',
-    qualityNote: 'تصدير بجودة Full HD مع الحفاظ على ١٠٠٪ من الجودة.',
-    howToSave: 'إذا فشل التحميل، اضغط مطولاً على الصورة لحفظها.',
-    darkMode: 'داكن',
-    lightMode: 'فاتح',
-    watermark: 'إضافة علامة Hama IT المائية',
-    format: 'صيغة التصدير',
-    jpg: 'JPG (HD)',
-    png: 'PNG (بدون فقدان)',
-    platforms: {
-      'Instagram': 'إنستغرام',
-      'Facebook': 'فيسبوك',
-      'Telegram': 'تيليغرام',
-      'YouTube': 'يوتيوب',
-      'TikTok': 'تيك توك',
-      'X (Twitter)': 'X (تويتر)',
-    },
-    presets: {
-      'Square (1:1)': 'مربع (١:١)',
-      'Story / Reels (9:16)': 'قصة / ريلز (٩:١٦)',
-      'Portrait (4:5)': 'عمودي (٤:٥)',
-      'Post (4:3)': 'منشور (٤:٣)',
-      'Story (9:16)': 'قصة (٩:١٦)',
-      'Cover (16:9)': 'غلاف (١٦:٩)',
-      'Profile Photo': 'صورة الملف الشخصي',
-      'Profile / Channel Photo': 'صورة الملف الشخصي / القناة',
-      'Thumbnail': 'صورة مصغرة',
-      'Banner': 'غلاف القناة',
-      'Full-screen Video / Image': 'فيديو / صورة كاملة',
-      'Header': 'رأس الصفحة (Header)',
     }
   }
 };
